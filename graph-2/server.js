@@ -1,49 +1,30 @@
 const express = require("express");
-const app = express();
-const { buildSchema } = require("graphql");
 const { graphqlHTTP } = require("express-graphql");
+const { makeExecutableSchema } = require("@graphql-tools/schema");
+const app = express();
 
-const schema = buildSchema(`
+const schemaText = `
     type Query {
         products: [Product]
         orders: [Order]
     }
+`;
 
-    type Product {
-        id: ID!
-        description: String!
-        reviews: [Review]
-        price: Float!
-    }
-
-    type Review {
-        rating: Int!
-        comment: String!
-    }
-
-    type Order {
-        date: String!
-        subtotal: Float!
-        items: [OrderItem]
-    }
-
-    type OrderItem {
-        product: Product!
-        quantitiy: Int!
-    }
-`);
+const schema = makeExecutableSchema({
+    typeDefs: [schemaText],
+});
 
 const root = {
     products: [
         {
-            id: "redshoe",
-            description: "Red Shoe",
-            price: 42.21,
+            id: "h1",
+            description: "hello-1",
+            price: 42.5,
         },
         {
-            id: "bluejean",
-            description: "Blue Jean",
-            price: 55.43,
+            id: "h2",
+            description: "hello-2",
+            price: 45.6,
         },
     ],
     orders: [
@@ -53,9 +34,9 @@ const root = {
             items: [
                 {
                     product: {
-                        id: "redshoe",
-                        description: "Old Red Shoe",
-                        price: 45.11,
+                        id: "h1",
+                        description: "old hello-1",
+                        price: 45.86,
                     },
                     quantity: 2,
                 },
@@ -67,11 +48,11 @@ const root = {
 app.use(
     "/graphql",
     graphqlHTTP({
-        schema: schema,
+        schema,
         rootValue: root,
         graphiql: true,
     })
 );
 
 const port = 8000;
-app.listen(port, () => console.log("Running Graphql server..."));
+app.listen(port, () => console.log("listening on port 8000"));
